@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import javax.swing.border.EmptyBorder;
@@ -24,8 +25,8 @@ import javax.swing.event.DocumentListener;
 //asi esta funcionando pero se puede mejorar varias cosas
 //cosas para mejorar
 //por ahora la cantidad de cuadraditos se puede cambiar dentro del programa y funciona, despues cambiarlo para poder elegirlo desde afuera
-//mostrar cuando gana
-//poner cantidad de intentos
+//ir agregando de 1 columna mas, debo cambiar por afuera porque hay que cambiar tamaño de la ventana
+
 
 
 public class Rompe9v2 {
@@ -104,6 +105,9 @@ class MiLamina extends JPanel{
 		
 	Color colorPrendido = new Color(0, 204, 153); //color de las fichas
 	Color colorApagado = new Color(59, 89, 182);  //color del lugar donde no hay una ficha
+	int intentos=0;
+	boolean gano=false;
+	boolean seguirJugando=true;
 	
 	
 private void mover(int i, int j) { //
@@ -174,9 +178,74 @@ private class Escucha implements ActionListener{
 		
 	
 		mover(i,j);
+		intentos++;
+		gano=ChequeoGano();
+		
+		//si gano, pregunto si quiere jugar y si es asi reseteo variables
+		if (gano) {
+	
+		System.out.print(intentos);  //borrar
+		System.out.print(gano);//borrar
+		System.out.print(seguirJugando);//borrar
+		JOptionPane.showMessageDialog(null, "Has ganado! Felicitaciones, lo has logrado en "+intentos+" intentos","Felicitaciones", JOptionPane.PLAIN_MESSAGE);
+		ContinuarJugando();
+		if (seguirJugando) {
+			//tam ++;
+			intentos=0;
+			gano=false;
+			seguirJugando=true;
+			mezclar(); 
+			
+		}
+		else {
+			seguirJugando=false;
+			System.exit(0);
+		}
+		
+		System.out.print("           ");//borrar
+		System.out.print(seguirJugando);//borrar
+		}
 
 	}//cierra action performed
 }//cierra escucha	
+
+private boolean ChequeoGano() {
+	
+	for (int i=0; i<tam; i++) {
+		for (int j=0;j<tam;j++) {
+			if (i!=tam-1 || j!=tam-1){
+				
+				if (! botones[i][j].getText().equals(Integer.toString(i*tam+j+1))) //chequeo si coincide con la alineacion original, osea ordenados
+				{
+					return false;
+				}
+			}	
+			if (i==tam-1 && j==tam-1){	//me fijo el ultimo aparte
+				if (! botones[i][j].getText().equals(""))
+				{
+					return false;
+				}
+			}
+			
+		}//cierra for j
+	}//cierra for i
+	
+	return true; //si ninguna era incorrecta, gano
+	
+}//cierra clase ChequeoGano
+
+public void ContinuarJugando() {
+	int opcion=JOptionPane.showConfirmDialog(null,
+			"Quieres seguir jugando?", "Jugar?", JOptionPane.YES_NO_OPTION);
+	if (opcion==JOptionPane.YES_OPTION ){
+		seguirJugando=true;
+	}
+	else{
+		seguirJugando=false;
+	}
+
+	
+}
 
 
 }//cierra clase lamina
